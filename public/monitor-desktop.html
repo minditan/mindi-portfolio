@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1126, height=688" />
+    <title>Monitor Desktop</title>
+    <link rel="stylesheet" href="/monitor-desktop.css?v=387" />
+    <link rel="preload" as="image" href="/about-photo.jpg?v=387" />
+  </head>
+  <body>
+    <div class="desktop">
+      <p id="dock-hint" class="dock-hint">Click the icons below to learn more about me!</p>
+
+      <nav id="dock" class="dock" aria-label="Desktop dock"></nav>
+
+      <div id="popup" class="popup" hidden>
+        <div class="popup-card" role="dialog" aria-modal="true">
+          <div class="popup-header">
+            <div id="popup-title" class="popup-title"></div>
+            <button id="popup-close" class="popup-close" type="button" aria-label="Close">
+              ×
+            </button>
+          </div>
+          <div id="popup-body" class="popup-body"></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/monitor-desktop.js?v=387"></script>
+  </body>
+</html>

@@ -6,6 +6,10 @@
     {
       "source": "/(.*).glb",
       "headers": [{ "key": "Content-Type", "value": "model/gltf-binary" }]
+    },
+    {
+      "source": "/music/(.*).mp3",
+      "headers": [{ "key": "Content-Type", "value": "audio/mpeg" }]
     }
   ]
 }
