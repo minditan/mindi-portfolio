@@ -4,3 +4,29 @@ node_modules/
 dist/
 .DS_Store
 *.bak
+.vercel
+*.blend
+*.blend1
+*.HEIC
+public/*.mp3
+public/music/
+public/project3*
+public/SABS_Final*.pdf
+public/room.glb.blend*
+public/room-blender.glb
+public/178055099*.jpeg
+public/ChatGPT Image*
+public/Dinosaur game*
+public/IMG_*
+public/Screenshot*
+public/bunny-new-temp*
+public/github-popup-bg.jpeg
+public/images.png
+public/nasa-*.webp
+public/nasa-*.jpg
+public/roomfolio-*.jpg
+public/bubble-milk-tea*
+public/64095574*
+public/Blender_logo*
+public/project3*
+scripts/export-blender-room.mjs
