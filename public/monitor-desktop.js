@@ -60,6 +60,16 @@ const PROFILE = {
         "HTML/CSS monitor UI overlays",
         "Vercel deployment workflow",
       ],
+      links: [
+        {
+          label: "View live portfolio",
+          href: "https://mindi-portfolio.vercel.app/",
+        },
+        {
+          label: "View on GitHub",
+          href: "https://github.com/minditan/mindi-portfolio",
+        },
+      ],
     },
     {
       id: "nasa",
@@ -118,6 +128,10 @@ const PROFILE = {
         {
           label: "Open Sharetea POS Portal",
           href: "https://project3-team40-frontend.onrender.com/",
+        },
+        {
+          label: "View on GitHub",
+          href: "https://github.com/minditan/sharetea-pos",
         },
         {
           label: "Download project source (ZIP)",
@@ -212,12 +226,13 @@ const PROFILE = {
   },
 };
 
-const DESKTOP_VERSION = "387";
-const GITHUB_IN_PROGRESS = "in progress ...";
+const DESKTOP_VERSION = "388";
 
-function isGitHubLink(href) {
-  return typeof href === "string" && /github\.com/i.test(href);
-}
+const GITHUB_LINKS = {
+  profile: "https://github.com/minditan",
+  portfolio: "https://github.com/minditan/mindi-portfolio",
+  sharetea: "https://github.com/minditan/sharetea-pos",
+};
 const ABOUT_PHOTO = `/about-photo.jpg?v=${DESKTOP_VERSION}`;
 const RESUME_PDF = `/resume.pdf?v=${DESKTOP_VERSION}`;
 const RESUME_PREVIEW = `/resume-preview.png?v=${DESKTOP_VERSION}`;
@@ -528,7 +543,10 @@ const BLENDER_PROJECT = {
       href: "https://mindi-portfolio.vercel.app",
       primary: true,
     },
-    { label: GITHUB_IN_PROGRESS, disabled: true },
+    {
+      label: "View on GitHub",
+      href: GITHUB_LINKS.portfolio,
+    },
   ],
   images: FALLBACK_ROOMFOLIO_IMAGES,
 };
@@ -649,7 +667,7 @@ const SHARETEA_PROJECT = {
     "This project strengthened my full-stack development skills, especially in React UI architecture, backend service design, PostgreSQL integration, and building reporting tools that turn raw operational data into usable business insights.",
   links: {
     demo: "https://project3-team40-frontend.onrender.com/",
-    github: "https://github.com/minditan",
+    github: GITHUB_LINKS.sharetea,
     zip: `/project3_team40-2.0.0.zip?v=${DESKTOP_VERSION}`,
     tar: `/project3_team40-2.0.0.tar.gz?v=${DESKTOP_VERSION}`,
   },
@@ -769,7 +787,10 @@ function getBlenderProjectLinks() {
       href: getPortfolioLiveUrl(),
       primary: true,
     },
-    { label: GITHUB_IN_PROGRESS, disabled: true },
+    {
+      label: "View on GitHub",
+      href: GITHUB_LINKS.portfolio,
+    },
   ];
 }
 const dockEl = document.getElementById("dock");
@@ -788,16 +809,6 @@ function renderSkillTags(skills) {
 }
 
 function renderLinkPopup(id, { message, href, linkText }) {
-  if (id === "github" || isGitHubLink(href)) {
-    return `
-    <div class="link-popup">
-      <div class="link-popup-inner">
-        <p class="link-popup-message">${GITHUB_IN_PROGRESS}</p>
-      </div>
-    </div>
-  `;
-  }
-
   const compactClass = "";
 
   return `
@@ -852,8 +863,8 @@ function renderAboutHighlights() {
 function renderLinks(links) {
   return `<div class="project-links">${links
     .map((link) => {
-      if (link.disabled || isGitHubLink(link.href)) {
-        return `<span class="project-link-placeholder">${GITHUB_IN_PROGRESS}</span>`;
+      if (link.disabled) {
+        return `<span class="project-link-placeholder">${link.label}</span>`;
       }
 
       return `
@@ -914,9 +925,9 @@ function renderProjectGalleryMeta({ tools, status, links }) {
         <div class="project-link-row">
           ${links
             .map((link) => {
-              if (link.disabled || isGitHubLink(link.href)) {
+              if (link.disabled) {
                 return `
-            <span class="project-link-btn is-disabled">${GITHUB_IN_PROGRESS}</span>
+            <span class="project-link-btn is-disabled">${link.label}</span>
           `;
               }
 
@@ -1191,7 +1202,15 @@ function renderShareteaShowcase() {
             ${project.tags.map((tag) => `<span class="sharetea-tag">${tag}</span>`).join("")}
           </div>
           <div class="sharetea-actions">
-            <span class="sharetea-btn sharetea-btn-primary is-disabled">${GITHUB_IN_PROGRESS}</span>
+            <a
+              class="sharetea-btn sharetea-btn-primary"
+              href="${project.links.github}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on GitHub
+              <span class="sharetea-btn-icon" aria-hidden="true">↗</span>
+            </a>
             <a
               class="sharetea-btn sharetea-btn-ghost"
               href="${project.links.demo}"
@@ -1500,10 +1519,9 @@ function popupContent(id) {
               ${
                 entry.links
                   ? `<div class="project-links">${entry.links
-                      .map((link) =>
-                        isGitHubLink(link.href)
-                          ? `<span class="project-link-placeholder">${GITHUB_IN_PROGRESS}</span>`
-                          : `<a href="${link.href}" target="_blank" rel="noopener noreferrer">${link.label}</a>`
+                      .map(
+                        (link) =>
+                          `<a href="${link.href}" target="_blank" rel="noopener noreferrer">${link.label}</a>`
                       )
                       .join("")}</div>`
                   : ""
