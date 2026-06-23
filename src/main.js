@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { inject } from "@vercel/analytics";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
@@ -31,6 +32,9 @@ import ecen314OscilloscopeUrl from "./assets/ecen-lab/ecen314-oscilloscope.png?u
 import ecenHeroChipUrl from "./assets/ecen-hero-chip.png?url";
 import introBunnyStickerUrl from "./assets/intro-bunny-sticker.png?url";
 import introBunnyStickerLeftUrl from "./assets/intro-bunny-sticker-left.png?url";
+
+inject();
+
 const intro = document.getElementById("intro");
 const introStatus = document.getElementById("intro-status");
 const introEnter = document.getElementById("intro-enter");
