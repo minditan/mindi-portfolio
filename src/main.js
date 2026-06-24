@@ -21,6 +21,8 @@ import clarityUrl from "./assets/music/clarity.mp3?url";
 import scaredToBeLonelyUrl from "./assets/music/scared-to-be-lonely.mp3?url";
 import aboutIconUrl from "./assets/icons/about.png?url";
 import electricalIconUrl from "./assets/icons/electrical.png?url";
+import aiglassesIconUrl from "./assets/icons/aiglasses.png?url";
+import aiGlassesPrototypeUrl from "./assets/ai-glasses/prototype-build.jpg?url";
 import ecen325SumAmpUrl from "./assets/ecen-lab/ecen325-sum-amp.png?url";
 import ecen325DiffAmpUrl from "./assets/ecen-lab/ecen325-diff-amp.png?url";
 import ecen325BjtCurveUrl from "./assets/ecen-lab/ecen325-bjt-curve.png?url";
@@ -187,7 +189,7 @@ const ENTER_REVEAL_MS = 1500;
 
 const CLICK_NAMES = /desk|monitor|screen|keyboard|mouse|computer|pc|case|display/i;
 const MONITOR_NAMES = /monitor|screen|display|laptop|lcd|imac|panel/i;
-const BUILD_VERSION = "v386";
+const BUILD_VERSION = "v391";
 const INTRO_HINT = "drag to look around · click the pink chair to sit!";
 const ROOM_HINT =
   "Click the chair to learn more about my portfolio and experiences!";
@@ -717,12 +719,20 @@ const MONITOR_ASSET_PAYLOAD = {
     },
   ],
   ecenHeroImage: ecenHeroChipUrl,
+  aiGlassesImages: [
+    {
+      src: aiGlassesPrototypeUrl,
+      alt: "ESP32 breadboard prototype with INMP441 microphone and OLED display reading Waiting for phone",
+      caption: "Current breadboard prototype — ESP32, INMP441 mic, and OLED subtitle display",
+    },
+  ],
   dockIcons: {
     about: aboutIconUrl,
     blender: blenderIconUrl,
     nasa: nasaIconUrl,
     sharetea: shareteaIconUrl,
     ecen: electricalIconUrl,
+    aiglasses: aiglassesIconUrl,
   },
 };
 

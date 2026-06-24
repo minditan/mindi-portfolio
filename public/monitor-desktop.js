@@ -226,7 +226,7 @@ const PROFILE = {
   },
 };
 
-const DESKTOP_VERSION = "388";
+const DESKTOP_VERSION = "391";
 
 const GITHUB_LINKS = {
   profile: "https://github.com/minditan",
@@ -254,6 +254,7 @@ const FALLBACK_DOCK_ICONS = {
   nasa: `/icons/nasa.png?v=${DESKTOP_VERSION}`,
   sharetea: `/icons/sharetea.png?v=${DESKTOP_VERSION}`,
   ecen: `/icons/electrical.png?v=${DESKTOP_VERSION}`,
+  aiglasses: `/icons/aiglasses.png?v=${DESKTOP_VERSION}`,
 };
 
 const FALLBACK_ECEN_IMAGES = [
@@ -313,6 +314,7 @@ const monitorAssets = {
   nasaImages: null,
   ecenImages: null,
   ecenHeroImage: ECEN_HERO_IMAGE,
+  aiGlassesImages: null,
   dockIcons: null,
 };
 
@@ -361,6 +363,9 @@ window.addEventListener("message", (event) => {
     if (event.data.assets.ecenHeroImage) {
       monitorAssets.ecenHeroImage = event.data.assets.ecenHeroImage;
     }
+    if (event.data.assets.aiGlassesImages?.length) {
+      monitorAssets.aiGlassesImages = event.data.assets.aiGlassesImages;
+    }
     if (event.data.assets.dockIcons) {
       monitorAssets.dockIcons = event.data.assets.dockIcons;
       refreshDockIcons();
@@ -391,7 +396,8 @@ function getDockIconMarkup(id) {
     id === "blender" ||
     id === "nasa" ||
     id === "sharetea" ||
-    id === "ecen"
+    id === "ecen" ||
+    id === "aiglasses"
   ) {
     return getDockIconHtml(id);
   }
@@ -408,7 +414,8 @@ function refreshDockIcons() {
       id !== "blender" &&
       id !== "nasa" &&
       id !== "sharetea" &&
-      id !== "ecen"
+      id !== "ecen" &&
+      id !== "aiglasses"
     ) {
       return;
     }
@@ -459,6 +466,10 @@ function getEcenHeroImageUrl() {
   return monitorAssets.ecenHeroImage || ECEN_HERO_IMAGE;
 }
 
+function getAiGlassesImages() {
+  return monitorAssets.aiGlassesImages || FALLBACK_AI_GLASSES_IMAGES;
+}
+
 const aboutPhotoPreload = new Image();
 aboutPhotoPreload.src = getAboutPhotoUrl();
 
@@ -507,6 +518,7 @@ const DOCK_ITEMS = [
   { id: "blender", label: "Room Folio", type: "popup" },
   { id: "nasa", label: "Team SOLARA", type: "popup" },
   { id: "sharetea", label: "Sharetea POS", type: "popup" },
+  { id: "aiglasses", label: "AI Glasses", type: "popup" },
   { id: "ecen", label: "Hardware & ECEN", type: "popup" },
   { id: "qualifications", label: "Qualifications", type: "popup" },
   { id: "github", label: "GitHub", type: "popup" },
@@ -671,6 +683,59 @@ const SHARETEA_PROJECT = {
     zip: `/project3_team40-2.0.0.zip?v=${DESKTOP_VERSION}`,
     tar: `/project3_team40-2.0.0.tar.gz?v=${DESKTOP_VERSION}`,
   },
+};
+
+const FALLBACK_AI_GLASSES_IMAGES = [
+  {
+    src: `/ai-glasses/prototype-build.jpg?v=${DESKTOP_VERSION}`,
+    alt: "ESP32 breadboard prototype with INMP441 microphone and OLED display",
+    caption: "Current breadboard prototype — ESP32, INMP441 mic, and OLED subtitle display",
+  },
+];
+
+const AI_GLASSES_TOOLS = ["Cursor", "Claude", "AI"];
+
+const AI_GLASSES_COMPONENTS = [
+  "HiLetgo ESP32",
+  "Breadboard",
+  "Circuit wires",
+  "INMP441",
+  "LiPo Battery",
+];
+
+const AI_GLASSES_PROJECT = {
+  title: "AI Subtitle Glasses",
+  subtitle:
+    "An ongoing wearable build — live speech captions on glasses for accessibility and real-time language support.",
+  status: "Ongoing Project",
+  statusNote:
+    "This is active work in progress. Hardware, firmware, and translation layers are still being tested and iterated.",
+  overview:
+    "I am building smart glasses that capture nearby speech and render live subtitles on a small display mounted to the frame. The long-term goal is a wearable tool that helps people follow conversations in real time — whether they have hearing difficulty, are learning a new language, or need translation across a language barrier.",
+  goal:
+    "Speak into the glasses, see subtitles appear on the lens display, and eventually switch languages so translated text shows instantly for the wearer.",
+  aiApproach:
+    "As AI becomes a bigger part of how we build technology, I am using Cursor, Claude, and other AI tools as learning partners — not answer machines. I ask them to break problems into steps, explain tradeoffs, and help me reason through firmware, wiring, and software decisions so I still understand and own the build.",
+  workflow: [
+    {
+      title: "Capture audio",
+      text: "The INMP441 I2S microphone feeds speech from the ESP32 into a lightweight capture pipeline.",
+    },
+    {
+      title: "Transcribe speech",
+      text: "Audio is sent to a backend service for speech recognition and subtitle generation.",
+    },
+    {
+      title: "Show subtitles",
+      text: "Recognized text is rendered on the glasses display as readable live captions.",
+    },
+    {
+      title: "Translate (next)",
+      text: "Planned language translation layer so subtitles can appear in the listener's preferred language.",
+    },
+  ],
+  tools: AI_GLASSES_TOOLS,
+  components: AI_GLASSES_COMPONENTS,
 };
 
 const ECEN_TOOL_ICONS = {
@@ -1143,6 +1208,92 @@ function renderEcenCourseSection(section) {
   `;
 }
 
+function renderAiGlassesShowcase() {
+  const project = AI_GLASSES_PROJECT;
+  const iconUrl = getDockIconUrl("aiglasses");
+  const images = getAiGlassesImages();
+
+  return `
+    <div class="project-showcase aiglasses-showcase">
+      <section class="aiglasses-hero">
+        <div class="aiglasses-hero-main">
+          <div class="aiglasses-title-row">
+            <img class="aiglasses-title-icon" src="${iconUrl}" alt="" />
+            <div>
+              <h2 class="aiglasses-title">${project.title}</h2>
+              <p class="aiglasses-subtitle">${project.subtitle}</p>
+            </div>
+          </div>
+          <div class="aiglasses-tags">
+            <span class="aiglasses-tag aiglasses-tag-status">${project.status}</span>
+            <span class="aiglasses-tag">ESP32</span>
+            <span class="aiglasses-tag">Speech-to-Text</span>
+            <span class="aiglasses-tag">Translation</span>
+          </div>
+          <p class="aiglasses-status-note">${project.statusNote}</p>
+        </div>
+      </section>
+
+      <section class="aiglasses-section">
+        <h3 class="aiglasses-section-title">Overview</h3>
+        <p class="aiglasses-section-text">${project.overview}</p>
+        <div class="aiglasses-goal-card">
+          <h4>Goal</h4>
+          <p>${project.goal}</p>
+        </div>
+      </section>
+
+      <section class="aiglasses-section aiglasses-split">
+        <div class="aiglasses-panel">
+          <h3 class="aiglasses-section-title">Tools & AI Approach</h3>
+          <div class="aiglasses-pill-row">
+            ${project.tools.map((tool) => `<span class="aiglasses-pill">${tool}</span>`).join("")}
+          </div>
+          <p class="aiglasses-panel-note">${project.aiApproach}</p>
+        </div>
+        <div class="aiglasses-panel">
+          <h3 class="aiglasses-section-title">Components</h3>
+          <ul class="aiglasses-component-list">
+            ${project.components.map((item) => `<li>${item}</li>`).join("")}
+          </ul>
+        </div>
+      </section>
+
+      <section class="aiglasses-section">
+        <h3 class="aiglasses-section-title">How It Works</h3>
+        <div class="aiglasses-workflow-grid">
+          ${project.workflow
+            .map(
+              (step) => `
+            <article class="aiglasses-workflow-card">
+              <h4>${step.title}</h4>
+              <p>${step.text}</p>
+            </article>
+          `
+            )
+            .join("")}
+        </div>
+      </section>
+
+      <section class="aiglasses-section">
+        <h3 class="aiglasses-section-title">Project Photos</h3>
+        <div class="aiglasses-gallery">
+          ${images
+            .map(
+              (image) => `
+            <figure class="aiglasses-figure">
+              <img src="${image.src}" alt="${image.alt}" loading="lazy" />
+              ${image.caption ? `<figcaption>${image.caption}</figcaption>` : ""}
+            </figure>
+          `
+            )
+            .join("")}
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function renderEcenShowcase() {
   const iconUrl = getDockIconUrl("ecen");
   const heroImageUrl = getEcenHeroImageUrl();
@@ -1480,6 +1631,10 @@ function popupContent(id) {
     return renderShareteaShowcase();
   }
 
+  if (id === "aiglasses") {
+    return renderAiGlassesShowcase();
+  }
+
   if (id === "ecen") {
     return renderEcenShowcase();
   }
@@ -1577,11 +1732,12 @@ function openPopup(id, label) {
   popupCardEl?.classList.toggle("is-about", id === "about");
   popupCardEl?.classList.toggle(
     "is-project-showcase",
-    id === "blender" || id === "nasa" || id === "sharetea" || id === "ecen"
+    id === "blender" || id === "nasa" || id === "sharetea" || id === "ecen" || id === "aiglasses"
   );
   popupCardEl?.classList.toggle("is-nasa-showcase", id === "nasa");
   popupCardEl?.classList.toggle("is-sharetea-showcase", id === "sharetea");
   popupCardEl?.classList.toggle("is-ecen-showcase", id === "ecen");
+  popupCardEl?.classList.toggle("is-aiglasses-showcase", id === "aiglasses");
   popupCardEl?.classList.toggle("is-resume-showcase", id === "resume");
   popupCardEl?.classList.toggle("is-wide", id === "qualifications" || id === "resume");
   popupCardEl?.classList.toggle("is-link", Boolean(LINK_POPUPS[id]));
@@ -1607,6 +1763,7 @@ function closePopup() {
     "is-nasa-showcase",
     "is-sharetea-showcase",
     "is-ecen-showcase",
+    "is-aiglasses-showcase",
     "is-resume-showcase"
   );
   dockEl.querySelectorAll(".dock-btn").forEach((btn) => {

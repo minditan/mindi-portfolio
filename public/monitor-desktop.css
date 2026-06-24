@@ -110,7 +110,8 @@ body {
 .dock-btn .dock-app-icon--nasa,
 .dock-btn .dock-app-icon--blender,
 .dock-btn .dock-app-icon--sharetea,
-.dock-btn .dock-app-icon--ecen {
+.dock-btn .dock-app-icon--ecen,
+.dock-btn .dock-app-icon--aiglasses {
   width: 48px;
   height: 48px;
 }
@@ -130,7 +131,8 @@ body {
 
 .dock-app-icon--blender,
 .dock-app-icon--sharetea,
-.dock-app-icon--ecen {
+.dock-app-icon--ecen,
+.dock-app-icon--aiglasses {
   overflow: visible;
   background: transparent;
 }
@@ -138,6 +140,12 @@ body {
 .dock-app-icon--ecen .dock-icon-img {
   object-fit: contain;
   filter: none;
+}
+
+.dock-app-icon--aiglasses .dock-icon-img {
+  object-fit: contain;
+  filter: none;
+  transform: scale(1.1);
 }
 
 .project-details-icon-img {
@@ -1778,4 +1786,251 @@ body {
   line-height: 1.4;
   color: #6b7280;
   border-top: 1px solid #eef2f7;
+}
+
+.popup-card.is-aiglasses-showcase {
+  width: min(1048px, 96%);
+  max-height: calc(100% - 6px);
+  background: #fff;
+}
+
+.popup-card.is-aiglasses-showcase .popup-header {
+  background: linear-gradient(180deg, #f0f9ff 0%, #fff 100%);
+  border-bottom-color: #dbeafe;
+}
+
+.popup-card.is-aiglasses-showcase .popup-title {
+  color: #0f172a;
+}
+
+.popup-card.is-aiglasses-showcase .popup-close {
+  color: #64748b;
+}
+
+.popup-card.is-aiglasses-showcase .popup-close:hover {
+  background: #e0f2fe;
+  color: #0f172a;
+}
+
+.popup-card.is-aiglasses-showcase .popup-body {
+  background: #fff;
+  color: #334155;
+  max-height: min(548px, calc(100% - 52px));
+  padding: 26px 34px 88px;
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+.aiglasses-showcase {
+  display: grid;
+  gap: 24px;
+  padding-bottom: 48px;
+}
+
+.aiglasses-hero-main {
+  min-width: 0;
+}
+
+.aiglasses-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.aiglasses-title-icon {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.aiglasses-title {
+  margin: 0 0 8px;
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.aiglasses-subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #475569;
+  max-width: 72ch;
+}
+
+.aiglasses-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.aiglasses-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.aiglasses-tag-status {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.aiglasses-status-note {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: 12.5px;
+  line-height: 1.55;
+  max-width: 72ch;
+}
+
+.aiglasses-section-title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.aiglasses-section-text {
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
+}
+
+.aiglasses-goal-card {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+  border: 1px solid #dbeafe;
+}
+
+.aiglasses-goal-card h4 {
+  margin: 0 0 6px;
+  font-size: 0.92rem;
+  color: #1d4ed8;
+}
+
+.aiglasses-goal-card p {
+  margin: 0;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.aiglasses-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.aiglasses-panel {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.aiglasses-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.aiglasses-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.aiglasses-panel-note {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+.aiglasses-component-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #334155;
+}
+
+.aiglasses-component-list li + li {
+  margin-top: 6px;
+}
+
+.aiglasses-workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.aiglasses-workflow-card {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.aiglasses-workflow-card h4 {
+  margin: 0 0 6px;
+  font-size: 0.92rem;
+  color: #0f172a;
+}
+
+.aiglasses-workflow-card p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+.aiglasses-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.aiglasses-figure {
+  margin: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.aiglasses-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.aiglasses-figure figcaption {
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #64748b;
+  border-top: 1px solid #eef2f7;
+}
+
+@media (max-width: 760px) {
+  .aiglasses-split,
+  .aiglasses-workflow-grid {
+    grid-template-columns: 1fr;
+  }
 }
