@@ -189,7 +189,7 @@ const ENTER_REVEAL_MS = 1500;
 
 const CLICK_NAMES = /desk|monitor|screen|keyboard|mouse|computer|pc|case|display/i;
 const MONITOR_NAMES = /monitor|screen|display|laptop|lcd|imac|panel/i;
-const BUILD_VERSION = "v391";
+const BUILD_VERSION = "v392";
 const INTRO_HINT = "drag to look around · click the pink chair to sit!";
 const ROOM_HINT =
   "Click the chair to learn more about my portfolio and experiences!";
