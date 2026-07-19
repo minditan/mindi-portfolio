@@ -189,7 +189,7 @@ const ENTER_REVEAL_MS = 1500;
 
 const CLICK_NAMES = /desk|monitor|screen|keyboard|mouse|computer|pc|case|display/i;
 const MONITOR_NAMES = /monitor|screen|display|laptop|lcd|imac|panel/i;
-const BUILD_VERSION = "v395";
+const BUILD_VERSION = "v392";
 const INTRO_HINT = "drag to look around · click the pink chair to sit!";
 const ROOM_HINT =
   "Click the chair to learn more about my portfolio and experiences!";
@@ -758,7 +758,6 @@ window.addEventListener("message", (event) => {
 });
 const VERTICAL_MONITOR_RESUME_NODES = new Set(["Plane.014"]);
 const VERTICAL_MONITOR_RESUME_MESHES = new Set(["Plane014"]);
-const VERTICAL_MONITOR_RESUME_URL = "/resume-preview.png";
 const MAIN_MONITOR_WALLPAPER_URL = "/monitor-wallpaper.jpg";
 const MAIN_MONITOR_SCREEN_NODES = new Set(["Plane.013", "Plane.994", "Plane.780"]);
 const MAIN_MONITOR_SCREEN_MESHES = new Set(["Plane013", "Plane994", "Plane780"]);
@@ -1341,17 +1340,21 @@ function applyScreenMaterial(mesh, options, maxAnisotropy) {
   return true;
 }
 
-async function prepareVerticalMonitorScreen(root) {
+function prepareVerticalMonitorScreen(root) {
   let screenMesh = null;
   let bestScore = -1;
   const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
-  const textureLoader = new THREE.TextureLoader();
 
   root.traverse((child) => {
     if (!isVerticalMonitorScreenMesh(child)) return;
 
+    const sourceMaterial = Array.isArray(child.material)
+      ? child.material[0]
+      : child.material;
+    const textured = hasUsableScreenTexture(sourceMaterial);
     const nodeName = getGltfNodeName(child);
     const score =
+      (textured ? 100 : 0) +
       (VERTICAL_MONITOR_RESUME_NODES.has(nodeName) ? 10 : 0) +
       (VERTICAL_MONITOR_RESUME_MESHES.has(normalizeGltfName(child.name || ""))
         ? 5
@@ -1359,51 +1362,22 @@ async function prepareVerticalMonitorScreen(root) {
 
     if (score < bestScore) return;
     bestScore = score;
+
+    applyScreenMaterial(
+      child,
+      textured
+        ? { map: sourceMaterial.map }
+        : { color: VERTICAL_MONITOR_FALLBACK_COLOR },
+      maxAnisotropy
+    );
+    child.userData.monitorScreenMode = textured ? "textured" : "black-fallback";
     screenMesh = child;
   });
-
-  if (!screenMesh) {
-    console.warn(
-      `[portfolio ${BUILD_VERSION}] Vertical monitor screen mesh not found`
-    );
-    return null;
-  }
-
-  let mode = "black-fallback";
-  try {
-    const map = await textureLoader.loadAsync(
-      `${VERTICAL_MONITOR_RESUME_URL}?v=${BUILD_VERSION}`
-    );
-    // Match glTF UV orientation so the resume isn't flipped on the screen plane.
-    map.flipY = false;
-    applyScreenMaterial(screenMesh, { map }, maxAnisotropy);
-    mode = "resume-preview";
-  } catch (err) {
-    console.warn(
-      `[portfolio ${BUILD_VERSION}] Vertical monitor resume failed`,
-      err
-    );
-    const sourceMaterial = Array.isArray(screenMesh.material)
-      ? screenMesh.material[0]
-      : screenMesh.material;
-    if (hasUsableScreenTexture(sourceMaterial)) {
-      applyScreenMaterial(screenMesh, { map: sourceMaterial.map }, maxAnisotropy);
-      mode = "glb-texture";
-    } else {
-      applyScreenMaterial(
-        screenMesh,
-        { color: VERTICAL_MONITOR_FALLBACK_COLOR },
-        maxAnisotropy
-      );
-    }
-  }
-
-  screenMesh.userData.monitorScreenMode = mode;
 
   console.info(`[portfolio ${BUILD_VERSION} vertical-monitor-screen]`, {
     mesh: screenMesh?.name || null,
     node: screenMesh ? getGltfNodeName(screenMesh) : null,
-    mode,
+    mode: screenMesh?.userData?.monitorScreenMode || "missing",
     anisotropy: maxAnisotropy,
   });
 
@@ -3275,7 +3249,7 @@ async function loadRoom() {
     setupMiniDesk(room);
     setupDeskCandleGlass(room);
     await prepareBakedMonitorScreen(roomGltf.scene);
-    await prepareVerticalMonitorScreen(roomGltf.scene);
+    prepareVerticalMonitorScreen(roomGltf.scene);
     setupMainMonitorDesktop(roomGltf.scene);
     applyMonitorCloseUpCamera();
     prepareMaterials(room);

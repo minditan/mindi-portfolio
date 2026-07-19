@@ -226,7 +226,7 @@ const PROFILE = {
   },
 };
 
-const DESKTOP_VERSION = "393";
+const DESKTOP_VERSION = "392";
 
 const GITHUB_LINKS = {
   profile: "https://github.com/minditan",
