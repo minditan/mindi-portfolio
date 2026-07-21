@@ -234,8 +234,8 @@ const GITHUB_LINKS = {
   sharetea: "https://github.com/minditan/sharetea-pos",
 };
 const ABOUT_PHOTO = `/about-photo.jpg?v=${DESKTOP_VERSION}`;
-const RESUME_PDF = `/resume.pdf?v=${DESKTOP_VERSION}`;
-const RESUME_PREVIEW = `/resume-preview.png?v=${DESKTOP_VERSION}`;
+const RESUME_PDF = `/resume.pdf?v=396b`;
+const RESUME_PREVIEW = `/resume-preview.png?v=396b`;
 const ECEN_HERO_IMAGE = `/ecen-hero-chip.png?v=${DESKTOP_VERSION}`;
 
 const ICONS = {

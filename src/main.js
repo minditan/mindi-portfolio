@@ -18,7 +18,6 @@ import pinkWhiteUrl from "./assets/music/pink-white.mp3?url";
 import sweetDispositionUrl from "./assets/music/sweet-disposition.mp3?url";
 import coldWaterUrl from "./assets/music/cold-water.mp3?url";
 import clarityUrl from "./assets/music/clarity.mp3?url";
-import scaredToBeLonelyUrl from "./assets/music/scared-to-be-lonely.mp3?url";
 import aboutIconUrl from "./assets/icons/about.png?url";
 import electricalIconUrl from "./assets/icons/electrical.png?url";
 import aiglassesIconUrl from "./assets/icons/aiglasses.png?url";
@@ -196,16 +195,16 @@ const ROOM_HINT =
 
 const MUSIC_TRACKS = [
   {
-    id: "pink-white",
-    title: "Pink + White",
-    artist: "Frank Ocean",
-    url: pinkWhiteUrl,
-  },
-  {
     id: "sweet-disposition",
     title: "Sweet Disposition (Live @ KEXP)",
     artist: "The Temper Trap",
     url: sweetDispositionUrl,
+  },
+  {
+    id: "pink-white",
+    title: "Pink + White",
+    artist: "Frank Ocean",
+    url: pinkWhiteUrl,
   },
   {
     id: "cold-water",
@@ -218,12 +217,6 @@ const MUSIC_TRACKS = [
     title: "Clarity",
     artist: "Zedd feat. Foxes",
     url: clarityUrl,
-  },
-  {
-    id: "scared-to-be-lonely",
-    title: "Scared To Be Lonely",
-    artist: "Martin Garrix & Dua Lipa",
-    url: scaredToBeLonelyUrl,
   },
 ];
 
@@ -758,6 +751,8 @@ window.addEventListener("message", (event) => {
 });
 const VERTICAL_MONITOR_RESUME_NODES = new Set(["Plane.014"]);
 const VERTICAL_MONITOR_RESUME_MESHES = new Set(["Plane014"]);
+const VERTICAL_MONITOR_RESUME_URL = "/resume-preview.png";
+const RESUME_ASSET_VERSION = "396b";
 const MAIN_MONITOR_WALLPAPER_URL = "/monitor-wallpaper.jpg";
 const MAIN_MONITOR_SCREEN_NODES = new Set(["Plane.013", "Plane.994", "Plane.780"]);
 const MAIN_MONITOR_SCREEN_MESHES = new Set(["Plane013", "Plane994", "Plane780"]);
@@ -1340,21 +1335,17 @@ function applyScreenMaterial(mesh, options, maxAnisotropy) {
   return true;
 }
 
-function prepareVerticalMonitorScreen(root) {
+async function prepareVerticalMonitorScreen(root) {
   let screenMesh = null;
   let bestScore = -1;
   const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+  const textureLoader = new THREE.TextureLoader();
 
   root.traverse((child) => {
     if (!isVerticalMonitorScreenMesh(child)) return;
 
-    const sourceMaterial = Array.isArray(child.material)
-      ? child.material[0]
-      : child.material;
-    const textured = hasUsableScreenTexture(sourceMaterial);
     const nodeName = getGltfNodeName(child);
     const score =
-      (textured ? 100 : 0) +
       (VERTICAL_MONITOR_RESUME_NODES.has(nodeName) ? 10 : 0) +
       (VERTICAL_MONITOR_RESUME_MESHES.has(normalizeGltfName(child.name || ""))
         ? 5
@@ -1362,22 +1353,51 @@ function prepareVerticalMonitorScreen(root) {
 
     if (score < bestScore) return;
     bestScore = score;
-
-    applyScreenMaterial(
-      child,
-      textured
-        ? { map: sourceMaterial.map }
-        : { color: VERTICAL_MONITOR_FALLBACK_COLOR },
-      maxAnisotropy
-    );
-    child.userData.monitorScreenMode = textured ? "textured" : "black-fallback";
     screenMesh = child;
   });
+
+  if (!screenMesh) {
+    console.warn(
+      `[portfolio ${BUILD_VERSION}] Vertical monitor screen mesh not found`
+    );
+    return null;
+  }
+
+  let mode = "black-fallback";
+  try {
+    const map = await textureLoader.loadAsync(
+      `${VERTICAL_MONITOR_RESUME_URL}?v=${RESUME_ASSET_VERSION}`
+    );
+    // Match glTF UV orientation so the resume isn't flipped on the screen plane.
+    map.flipY = false;
+    applyScreenMaterial(screenMesh, { map }, maxAnisotropy);
+    mode = "resume-preview";
+  } catch (err) {
+    console.warn(
+      `[portfolio ${BUILD_VERSION}] Vertical monitor resume failed`,
+      err
+    );
+    const sourceMaterial = Array.isArray(screenMesh.material)
+      ? screenMesh.material[0]
+      : screenMesh.material;
+    if (hasUsableScreenTexture(sourceMaterial)) {
+      applyScreenMaterial(screenMesh, { map: sourceMaterial.map }, maxAnisotropy);
+      mode = "glb-texture";
+    } else {
+      applyScreenMaterial(
+        screenMesh,
+        { color: VERTICAL_MONITOR_FALLBACK_COLOR },
+        maxAnisotropy
+      );
+    }
+  }
+
+  screenMesh.userData.monitorScreenMode = mode;
 
   console.info(`[portfolio ${BUILD_VERSION} vertical-monitor-screen]`, {
     mesh: screenMesh?.name || null,
     node: screenMesh ? getGltfNodeName(screenMesh) : null,
-    mode: screenMesh?.userData?.monitorScreenMode || "missing",
+    mode,
     anisotropy: maxAnisotropy,
   });
 
@@ -3249,7 +3269,7 @@ async function loadRoom() {
     setupMiniDesk(room);
     setupDeskCandleGlass(room);
     await prepareBakedMonitorScreen(roomGltf.scene);
-    prepareVerticalMonitorScreen(roomGltf.scene);
+    await prepareVerticalMonitorScreen(roomGltf.scene);
     setupMainMonitorDesktop(roomGltf.scene);
     applyMonitorCloseUpCamera();
     prepareMaterials(room);
