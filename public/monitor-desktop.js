@@ -756,7 +756,7 @@ const FALLBACK_AI_GLASSES_IMAGES = [
   },
 ];
 
-const AI_GLASSES_TOOLS = ["Cursor", "Claude", "AI"];
+const AI_GLASSES_TOOLS = ["Claude", "AI"];
 
 const AI_GLASSES_COMPONENTS = [
   "HiLetgo ESP32",
@@ -778,7 +778,7 @@ const AI_GLASSES_PROJECT = {
   goal:
     "Speak into the glasses, see subtitles appear on the lens display, and eventually switch languages so translated text shows instantly for the wearer.",
   aiApproach:
-    "As AI becomes a bigger part of how we build technology, I am using Cursor, Claude, and other AI tools as learning partners — not answer machines. I ask them to break problems into steps, explain tradeoffs, and help me reason through firmware, wiring, and software decisions so I still understand and own the build.",
+    "As AI becomes a bigger part of how we build technology, I am using Claude and other AI tools as learning partners — not answer machines. I ask them to break problems into steps, explain tradeoffs, and help me reason through firmware, wiring, and software decisions so I still understand and own the build.",
   workflow: [
     {
       title: "Capture audio",
