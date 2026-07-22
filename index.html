@@ -10,10 +10,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/src/style.css?v=409" />
+    <link rel="stylesheet" href="/src/style.css?v=440" />
   </head>
   <body>
     <div id="intro" class="intro" aria-live="polite">
@@ -77,6 +77,339 @@
       </span>
       <span class="record-cursor-subtitle">Click for playlist</span>
     </button>
+    <button id="electrical-cursor" type="button" hidden aria-label="Click to view McKim and Creed and AI smart glasses projects">
+      <span class="electrical-cursor-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M11 2 6.5 13h4.2L9.8 22 17.5 9.5h-4.4L15.5 2H11z"
+          />
+        </svg>
+      </span>
+      <span class="electrical-cursor-subtitle">Click for projects</span>
+    </button>
+    <div id="projects-overlay" class="projects-overlay" hidden>
+      <button
+        type="button"
+        class="projects-overlay-backdrop"
+        data-close-projects
+        aria-label="Close projects"
+      ></button>
+      <div
+        class="projects-overlay-stage"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="projects-overlay-title"
+      >
+        <button
+          type="button"
+          class="projects-overlay-close"
+          data-close-projects
+          aria-label="Close projects"
+        >
+          ×
+        </button>
+        <header class="projects-overlay-banner">
+          <p id="projects-overlay-title" class="projects-overlay-kicker">
+            Workbench notes · ECEN desk
+          </p>
+        </header>
+        <div class="projects-overlay-panels">
+          <article class="projects-panel projects-panel--mckim projects-doc">
+            <header class="projects-doc-head">
+              <img
+                class="projects-doc-icon"
+                src="/icons/mckim.png"
+                alt=""
+                width="48"
+                height="48"
+              />
+              <div class="projects-doc-head-copy">
+                <h2 class="projects-doc-title">McKim &amp; Creed, Inc. (Signature Automation)</h2>
+                <p class="projects-doc-role">
+                  Electrical &amp; Instrumentation Co-op
+                  <span aria-hidden="true">•</span>
+                  Controls &amp; Automation Engineering
+                </p>
+              </div>
+            </header>
+
+            <div class="projects-doc-body">
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Professional Overview</h3>
+                <p>
+                  As an Electrical &amp; Instrumentation Co-op with Signature Automation, a
+                  division of McKim &amp; Creed, I contribute to the design and implementation of
+                  industrial automation systems that support municipal water and wastewater
+                  treatment facilities. Working alongside experienced controls engineers, I assist
+                  in developing electrical and control system solutions that improve operational
+                  reliability, efficiency, and process automation for critical infrastructure.
+                </p>
+                <p>
+                  My work spans both electrical design and industrial software development,
+                  providing exposure to the complete lifecycle of automation projects—from system
+                  planning and electrical documentation to PLC programming, SCADA visualization,
+                  commissioning, and system integration. This multidisciplinary environment allows
+                  me to bridge computer engineering principles with real-world industrial control
+                  applications.
+                </p>
+              </section>
+
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Purpose &amp; Motivation</h3>
+                <p>
+                  This co-op represents an opportunity to apply classroom concepts to large-scale
+                  industrial automation systems while expanding my experience in both embedded
+                  software and electrical engineering.
+                </p>
+                <p>
+                  One of the reasons I was drawn to Signature Automation is the unique combination
+                  of software development and hardware design. Computer Engineering has always
+                  appealed to me because it exists at the intersection of these disciplines, and
+                  this role allows me to develop both simultaneously. Working on infrastructure
+                  that directly impacts communities has strengthened my passion for designing
+                  reliable, intelligent systems that solve meaningful engineering challenges.
+                </p>
+                <p>
+                  Beyond technical growth, this experience has reinforced the importance of
+                  collaboration, engineering standards, and designing solutions that prioritize
+                  long-term reliability and safety.
+                </p>
+              </section>
+
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Technical Experience</h3>
+                <div class="projects-doc-stack-grid">
+                  <div>
+                    <h4 class="projects-doc-subhead">Electrical Design</h4>
+                    <ul class="projects-doc-list">
+                      <li>Electrical one-line diagrams</li>
+                      <li>Instrumentation details</li>
+                      <li>Control panel layouts</li>
+                      <li>SCADA network architecture diagrams</li>
+                      <li>Equipment research and specification development</li>
+                      <li>Electrical documentation for construction and commissioning</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="projects-doc-subhead">Controls &amp; Automation</h4>
+                    <ul class="projects-doc-list">
+                      <li>PLC programming</li>
+                      <li>SCADA application development</li>
+                      <li>Human-Machine Interface (HMI) graphics</li>
+                      <li>Process visualization</li>
+                      <li>Historical data collection and reporting</li>
+                      <li>Industrial control system commissioning</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="projects-doc-subhead">Engineering Software &amp; Tools</h4>
+                    <ul class="projects-doc-list">
+                      <li>AutoCAD Electrical</li>
+                      <li>Programmable Logic Controllers (PLC)</li>
+                      <li>SCADA Systems</li>
+                      <li>Human-Machine Interface (HMI)</li>
+                      <li>Industrial Networking</li>
+                      <li>Electrical Instrumentation</li>
+                      <li>Process Control Systems</li>
+                      <li>Technical Documentation</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Engineering Impact</h3>
+                <p>
+                  Modern water and wastewater treatment facilities rely heavily on industrial
+                  automation to ensure safe, efficient, and continuous operation. The electrical
+                  designs, PLC logic, and SCADA systems developed by Signature Automation enable
+                  operators to monitor equipment, automate treatment processes, collect operational
+                  data, and respond quickly to changing plant conditions.
+                </p>
+                <p>
+                  Through this co-op, I am contributing to engineering solutions that support
+                  essential public infrastructure while gaining experience with technologies widely
+                  used across the industrial automation and controls industry.
+                </p>
+              </section>
+
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Acknowledgements</h3>
+                <p>
+                  I am incredibly grateful to the entire Signature Automation and McKim &amp; Creed
+                  team for providing me with the opportunity to grow as both an engineer and a
+                  professional.
+                </p>
+                <p>
+                  A special thank you to the recruiters, hiring team, mentors, and engineers who
+                  believed in my potential and entrusted me with this opportunity. Their guidance,
+                  patience, and willingness to share their knowledge have made this experience
+                  invaluable. I am excited to continue learning from such an experienced team while
+                  contributing to projects that make a meaningful impact on the communities they
+                  serve.
+                </p>
+              </section>
+
+              <p class="projects-doc-footer">
+                <a
+                  class="projects-panel-link"
+                  href="https://www.mckimcreed.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  mckimcreed.com
+                </a>
+              </p>
+            </div>
+          </article>
+
+          <article class="projects-panel projects-panel--glasses projects-doc">
+            <header class="projects-doc-head">
+              <img
+                class="projects-doc-icon"
+                src="/icons/aiglasses.png"
+                alt=""
+                width="48"
+                height="48"
+              />
+              <div class="projects-doc-head-copy">
+                <p class="projects-doc-eyebrow">Personal wearable · Hardware + firmware</p>
+                <h2 class="projects-doc-title">AI Smart Glasses</h2>
+                <p class="projects-doc-role">
+                  Real-Time Speech-To-Text Smart Glasses for Accessibility
+                </p>
+              </div>
+            </header>
+
+            <div class="projects-doc-body">
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Project Overview</h3>
+                <p>
+                  The AI Smart Glasses project is a wearable embedded system designed to provide
+                  real-time speech transcription directly within a user’s field of view. The device
+                  continuously captures spoken audio through an INMP441 MEMS digital microphone,
+                  where speech is sampled and transmitted to an ESP32 microcontroller for
+                  preprocessing before being sent to a speech recognition model. The recognized text
+                  is then rendered onto a compact waveguide/AR display module, projecting live
+                  captions onto the lens without obstructing the user’s natural vision.
+                </p>
+                <p>
+                  By integrating embedded systems, wireless communication, artificial intelligence,
+                  and real-time software, the project creates an intuitive hands-free interface that
+                  allows users to read conversations as they occur. The goal is to achieve
+                  low-latency transcription while maintaining a lightweight, portable, and
+                  energy-efficient wearable platform suitable for everyday use.
+                </p>
+              </section>
+
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Motivation</h3>
+                <p>
+                  As someone who is hard of hearing, I have experienced firsthand the challenges of
+                  following conversations in noisy environments or situations where speech clarity is
+                  limited. This project was inspired by a desire to create technology that removes
+                  communication barriers rather than adapting to them.
+                </p>
+                <p>
+                  Beyond accessibility, I wanted to pursue a project that combines my passion for
+                  both software engineering and embedded hardware design. Developing these smart
+                  glasses allows me to work across the full engineering stack—from circuit
+                  integration and embedded programming to AI inference and user interface
+                  design—while creating a product that has the potential to make a meaningful impact
+                  on everyday life.
+                </p>
+                <p>
+                  My goal is to build technology that is not only technically innovative but also
+                  genuinely improves the way people communicate.
+                </p>
+              </section>
+
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Technical Stack</h3>
+                <div class="projects-doc-stack-grid">
+                  <div>
+                    <h4 class="projects-doc-subhead">Hardware</h4>
+                    <ul class="projects-doc-list">
+                      <li>ESP32 Microcontroller</li>
+                      <li>INMP441 MEMS Digital Microphone</li>
+                      <li>AR Microdisplay / Waveguide Projection Lens</li>
+                      <li>Rechargeable Li-Po Battery</li>
+                      <li>Battery Charging &amp; Power Management Circuit</li>
+                      <li>Custom 3D-Printed Eyewear Housing</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="projects-doc-subhead">Software</h4>
+                    <ul class="projects-doc-list">
+                      <li>C++</li>
+                      <li>Arduino Framework</li>
+                      <li>Embedded Systems Programming</li>
+                      <li>Real-Time Audio Processing</li>
+                      <li>Speech-to-Text AI Pipeline</li>
+                      <li>Bluetooth / Wi-Fi Communication</li>
+                      <li>Display Rendering &amp; User Interface</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="projects-doc-subhead">Tools &amp; Technologies</h4>
+                    <ul class="projects-doc-list">
+                      <li>VS Code</li>
+                      <li>Arduino IDE / PlatformIO</li>
+                      <li>Git &amp; GitHub</li>
+                      <li>Fusion 360 / CAD</li>
+                      <li>3D Printing</li>
+                      <li>Oscilloscope &amp; Multimeter</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Impact &amp; Applications</h3>
+                <p>
+                  The AI Smart Glasses are designed to improve communication accessibility by
+                  providing instant speech captions directly within the user’s line of sight. Unlike
+                  traditional mobile captioning applications that require users to repeatedly look
+                  away from conversations, this wearable solution enables continuous eye contact and
+                  more natural interactions.
+                </p>
+                <p>Potential applications include:</p>
+                <ul class="projects-doc-list">
+                  <li>Accessibility for individuals who are hard of hearing or deaf</li>
+                  <li>Real-time communication assistance in noisy environments</li>
+                  <li>Language translation for multilingual conversations</li>
+                  <li>Educational settings and classroom accessibility</li>
+                  <li>Professional meetings and presentations</li>
+                  <li>Everyday hands-free communication</li>
+                </ul>
+                <p>
+                  By combining embedded hardware, artificial intelligence, and human-centered
+                  design, this project demonstrates how engineering can be leveraged to create
+                  technology that is both innovative and socially impactful.
+                </p>
+              </section>
+
+              <section class="projects-doc-section">
+                <h3 class="projects-doc-section-label">Status</h3>
+                <p class="projects-doc-status">
+                  <span class="projects-doc-status-pill projects-doc-status-pill--wip">In progress</span>
+                  Hardware, firmware, and the speech-to-text pipeline are actively under development.
+                </p>
+              </section>
+
+              <figure class="projects-panel-figure">
+                <img
+                  src="/ai-glasses/prototype-build.jpg"
+                  alt="ESP32 breadboard prototype with microphone and OLED display"
+                />
+                <figcaption>Current breadboard prototype — ESP32, INMP441 mic, OLED subtitle display</figcaption>
+              </figure>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
     <div id="music-playlist" class="music-playlist" hidden>
       <button type="button" class="music-playlist-backdrop" data-close-playlist aria-label="Close playlist"></button>
       <div class="music-playlist-panel" role="dialog" aria-labelledby="music-playlist-title">
@@ -139,6 +472,6 @@
         src="/monitor-desktop.html"
       ></iframe>
     </div>
-    <script type="module" src="/src/main.js?v=392"></script>
+    <script type="module" src="/src/main.js?v=440"></script>
   </body>
 </html>

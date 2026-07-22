@@ -47,6 +47,8 @@ const hint = document.getElementById("hint");
 const monitorScreen = document.getElementById("monitor-screen");
 const monitorScreenFrame = document.getElementById("monitor-screen-frame");
 const recordCursor = document.getElementById("record-cursor");
+const electricalCursor = document.getElementById("electrical-cursor");
+const projectsOverlay = document.getElementById("projects-overlay");
 const musicPlaylist = document.getElementById("music-playlist");
 const musicTrackList = document.getElementById("music-track-list");
 const roomMusicBar = document.getElementById("room-music-bar");
@@ -123,6 +125,8 @@ let chairAnchor = null;
 let chairSpinPivot = null;
 let chairEnterStartTime = null;
 let recordPlayerAnchor = null;
+let electricalAnchor = null;
+let pegboardRoot = null;
 let recordSpinPivot = null;
 let recordSpinAxis = "y";
 let pcFanSpins = [];
@@ -158,6 +162,7 @@ const monitorCloseUpView = {
 
 const chairHintWorld = new THREE.Vector3();
 const recordHintWorld = new THREE.Vector3();
+const electricalHintWorld = new THREE.Vector3();
 const monitorHintWorld = new THREE.Vector3();
 const CHAIR_SPIN_AMPLITUDE = Math.PI / 14;
 const CHAIR_SPIN_SPEED = 0.00045;
@@ -177,7 +182,7 @@ const ENTER_TOP_PASS_MS = 2800;
 
 const CLICK_NAMES = /desk|monitor|screen|keyboard|mouse|computer|pc|case|display/i;
 const MONITOR_NAMES = /monitor|screen|display|laptop|lcd|imac|panel/i;
-const BUILD_VERSION = "v409";
+const BUILD_VERSION = "v440";
 const INTRO_HINT = "drag to look around · click the pink chair to sit!";
 const ROOM_HINT =
   "Click the chair to learn more about my portfolio and experiences!";
@@ -214,6 +219,8 @@ if (introNavHintEl) introNavHintEl.textContent = INTRO_HINT;
 
 const RECORD_CURSOR_OFFSET_X = -42;
 const RECORD_CURSOR_OFFSET_Y = 68;
+const ELECTRICAL_CURSOR_OFFSET_X = -42;
+const ELECTRICAL_CURSOR_OFFSET_Y = 125;
 
 const RECORD_PLAYER_NODE_NAMES = new Set([
   "Cylinder.195",
@@ -832,9 +839,15 @@ function matchesMeshLabel(object, labels) {
 }
 
 function normalizeGltfName(name = "") {
-  if (/^Plane\d/.test(name)) return name.replace(/^Plane(\d)/, "Plane.$1");
-  if (/^Cylinder\d/.test(name)) return name.replace(/^Cylinder(\d)/, "Cylinder.$1");
-  return name;
+  // Three.js may keep Blender names, or flatten "Plane.565" → "Plane_565" / "Plane565".
+  let normalized = String(name || "").replaceAll("_", ".");
+  if (/^Plane\d/.test(normalized)) {
+    normalized = normalized.replace(/^Plane(\d)/, "Plane.$1");
+  }
+  if (/^Cylinder\d/.test(normalized)) {
+    normalized = normalized.replace(/^Cylinder(\d)/, "Cylinder.$1");
+  }
+  return normalized;
 }
 
 function isPinkChairObjectName(name) {
@@ -1748,6 +1761,7 @@ function setDeskViewUi(active) {
   backBtn.hidden = !active;
   chairCursor.hidden = true;
   recordCursor.hidden = true;
+  if (electricalCursor) electricalCursor.hidden = true;
   monitorCursor.hidden = !active || isMonitorCloseUpView;
   hint.classList.toggle("is-hidden", active);
   hint.textContent = active
@@ -1801,6 +1815,8 @@ function animateCameraTo(destination, onComplete, { endFov = null, duration = CA
   setControlsInteractive(false);
   chairCursor.hidden = true;
   monitorCursor.hidden = true;
+  if (recordCursor) recordCursor.hidden = true;
+  if (electricalCursor) electricalCursor.hidden = true;
 
   const step = (now) => {
     const raw = Math.min((now - startedAt) / duration, 1);
@@ -1901,6 +1917,7 @@ function playEnterOverviewSpin(onComplete) {
   chairCursor.hidden = true;
   monitorCursor.hidden = true;
   recordCursor.hidden = true;
+  if (electricalCursor) electricalCursor.hidden = true;
 
   const offset = new THREE.Vector3();
   const spherical = new THREE.Spherical();
@@ -2176,6 +2193,23 @@ function goToDeskView() {
   }, { endFov: DESK_FOV });
 }
 
+function goToElectricalEcenView() {
+  openProjectsOverlay();
+}
+
+function openProjectsOverlay() {
+  if (!projectsOverlay) return;
+  closeMusicPlaylist();
+  projectsOverlay.hidden = false;
+  document.body.classList.add("is-projects-overlay-open");
+}
+
+function closeProjectsOverlay() {
+  if (!projectsOverlay) return;
+  projectsOverlay.hidden = true;
+  document.body.classList.remove("is-projects-overlay-open");
+}
+
 function goToMonitorCloseUpView() {
   if (!isDeskView || isMonitorCloseUpView || isAnimating || !room) return;
 
@@ -2432,6 +2466,63 @@ function setupRecordPlayerAnchor(roomObject) {
   });
 }
 
+function setupElectricalAnchor(roomObject) {
+  if (!roomObject) return;
+
+  roomObject.updateMatrixWorld(true);
+
+  // Cutting mat under the AI glasses / PLC cluster on the electrical desk.
+  const MAT_NAMES = new Set(["Plane.143", "Plane143"]);
+
+  let matBox = null;
+  roomObject.traverse((child) => {
+    if (!child.isMesh || !child.visible) return;
+    const name = child.name || "";
+    const normalized = normalizeGltfName(name);
+    if (!MAT_NAMES.has(name) && !MAT_NAMES.has(normalized)) return;
+    child.updateMatrixWorld(true);
+    const meshBox = new THREE.Box3().setFromObject(child);
+    if (meshBox.isEmpty()) return;
+    matBox = meshBox;
+  });
+
+  const center = new THREE.Vector3();
+  if (matBox) {
+    // Sit between the black PLC (left of mat) and the glasses (on the mat).
+    // Plane.143 is the back desk slab under the pegboard — push toward camera
+    // so the hotspot lands on the green cutting-mat project cluster.
+    // Sit just in front of / below the PLC + glasses on the cutting mat.
+    matBox.getCenter(center);
+    center.x -= 2.05;
+    center.y = matBox.max.y + 0.4;
+    center.z += 2.35;
+  } else if (pegboardRoot) {
+    pegboardRoot.updateMatrixWorld(true);
+    const rootBox = new THREE.Box3().setFromObject(pegboardRoot);
+    if (rootBox.isEmpty()) {
+      console.warn(`[portfolio ${BUILD_VERSION}] Electrical desk anchor not found`);
+      return;
+    }
+    rootBox.getCenter(center);
+    center.y = rootBox.min.y - 1.4;
+    center.x -= 1.2;
+  } else {
+    console.warn(`[portfolio ${BUILD_VERSION}] Electrical desk anchor not found`);
+    return;
+  }
+
+  if (electricalAnchor) electricalAnchor.removeFromParent();
+  electricalAnchor = new THREE.Object3D();
+  electricalAnchor.name = "electricalAnchor";
+  electricalAnchor.position.copy(roomObject.worldToLocal(center.clone()));
+  roomObject.add(electricalAnchor);
+
+  console.info(`[portfolio ${BUILD_VERSION} electrical-anchor]`, {
+    anchor: center.toArray(),
+    mat: Boolean(matBox),
+  });
+}
+
 function isRecordVinylObjectName(name) {
   const normalized = normalizeGltfName(name);
   return RECORD_VINYL_NODE_NAMES.has(name) || RECORD_VINYL_NODE_NAMES.has(normalized);
@@ -2579,6 +2670,43 @@ function updateRecordCursor() {
   recordCursor.hidden = false;
 }
 
+function updateElectricalCursor() {
+  const roomActive = document.body.classList.contains("is-room-active");
+  if (
+    !room ||
+    !electricalCursor ||
+    !roomActive ||
+    isDeskView ||
+    isAnimating ||
+    !electricalAnchor ||
+    (projectsOverlay && !projectsOverlay.hidden)
+  ) {
+    if (electricalCursor) electricalCursor.hidden = true;
+    return;
+  }
+
+  electricalAnchor.getWorldPosition(electricalHintWorld);
+  const projected = electricalHintWorld.clone().project(camera);
+  if (projected.z < -1 || projected.z > 1) {
+    electricalCursor.hidden = true;
+    return;
+  }
+
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x =
+    rect.left +
+    ((projected.x + 1) / 2) * rect.width +
+    ELECTRICAL_CURSOR_OFFSET_X;
+  const y =
+    rect.top +
+    ((-projected.y + 1) / 2) * rect.height +
+    ELECTRICAL_CURSOR_OFFSET_Y;
+
+  electricalCursor.style.left = `${x}px`;
+  electricalCursor.style.top = `${y}px`;
+  electricalCursor.hidden = false;
+}
+
 function updateMonitorCursor() {
   if (!room || !isDeskView || isMonitorCloseUpView || isAnimating) {
     if (monitorCursor) monitorCursor.hidden = true;
@@ -2629,8 +2757,24 @@ function isChairHit(object) {
 backBtn.addEventListener("click", handleBackNavigation);
 chairCursor.addEventListener("click", goToDeskView);
 monitorCursor?.addEventListener("click", goToMonitorCloseUpView);
+electricalCursor?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  goToElectricalEcenView();
+});
+
+document.querySelectorAll("[data-close-projects]").forEach((button) => {
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    closeProjectsOverlay();
+  });
+});
 
 window.addEventListener("keydown", (event) => {
+  if (event.code === "Escape" && projectsOverlay && !projectsOverlay.hidden) {
+    closeProjectsOverlay();
+    return;
+  }
+
   if (event.code === "Escape" && musicPlayer.playlistOpen) {
     closeMusicPlaylist();
     return;
@@ -3085,6 +3229,12 @@ const PEGBOARD_TILE_NAMES = new Set([
   "Plane.569",
 ]);
 
+function isPegboardTileObjectName(name) {
+  if (!name) return false;
+  const normalized = normalizeGltfName(name);
+  return PEGBOARD_TILE_NAMES.has(name) || PEGBOARD_TILE_NAMES.has(normalized);
+}
+
 const OLD_PEGBOARD_PLANES = new Set(["Plane.712", "Plane.713", "Plane.714"]);
 
 function hideBrokenPegboard(object) {
@@ -3093,11 +3243,6 @@ function hideBrokenPegboard(object) {
     child.visible = false;
   });
 }
-
-const pegboardTileMat = new THREE.MeshBasicMaterial({
-  color: 0xf5f3ee,
-  side: THREE.DoubleSide,
-});
 
 function preparePegboardAddon(object) {
   object.traverse((child) => {
@@ -3108,24 +3253,25 @@ function preparePegboardAddon(object) {
       return;
     }
 
-    if (PEGBOARD_TILE_NAMES.has(child.name)) {
-      child.material = pegboardTileMat;
-      child.renderOrder = 2;
-      child.position.x += 0.35;
-      return;
-    }
-
     if (child.geometry) {
       child.geometry.computeVertexNormals();
     }
 
+    // Keep original glTF materials (do not replace with unlit MeshBasic —
+    // that made the board read as bright flat white).
     const mats = Array.isArray(child.material) ? child.material : [child.material];
     for (const mat of mats) {
       if (!mat) continue;
       mat.side = THREE.DoubleSide;
-      mat.roughness = 1;
-      mat.metalness = 0;
+      if ("roughness" in mat) mat.roughness = 1;
+      if ("metalness" in mat) mat.metalness = 0;
       if (mat.map) mat.map.colorSpace = THREE.SRGBColorSpace;
+    }
+
+    if (isPegboardTileObjectName(child.name)) {
+      child.position.x += 0.35;
+      child.renderOrder = 2;
+      return;
     }
 
     child.renderOrder = 4;
@@ -3234,7 +3380,7 @@ function fitCameraToRoom(object) {
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
-  const distance = maxDim * 1.62;
+  const distance = maxDim * 1.78;
 
   controls.target.set(center.x, center.y + size.y * 0.02, center.z);
   camera.position.set(
@@ -3404,6 +3550,7 @@ async function loadRoom() {
     if (pegboardGltf?.scene) {
       prepareMaterials(pegboardGltf.scene);
       preparePegboardAddon(pegboardGltf.scene);
+      pegboardRoot = pegboardGltf.scene;
       room.add(pegboardGltf.scene);
     }
 
@@ -3415,6 +3562,7 @@ async function loadRoom() {
     fitCameraToRoom(room);
     setupInteractionViews(room);
     setupRecordPlayerAnchor(room);
+    setupElectricalAnchor(room);
     setupRecordSpin();
     setupMiniDesk(room);
     setupDeskCandleGlass(room);
@@ -3466,6 +3614,7 @@ function animate(time = 0) {
   if (!isAnimating) {
     updateChairCursor();
     updateRecordCursor();
+    updateElectricalCursor();
     updateMonitorCursor();
   }
 
