@@ -252,7 +252,7 @@ const ICONS = {
 
 const FALLBACK_DOCK_ICONS = {
   about: `/icons/about.png?v=${DESKTOP_VERSION}`,
-  mckim: `/icons/mckim.png?v=399`,
+  mckim: `/icons/mckim.png?v=400`,
   blender: `/icons/blender.png?v=${DESKTOP_VERSION}`,
   nasa: `/icons/nasa.png?v=${DESKTOP_VERSION}`,
   sharetea: `/icons/sharetea.png?v=${DESKTOP_VERSION}`,
@@ -575,8 +575,6 @@ const MCKIM_PROJECT = {
   location: "Dallas, Texas",
   term: "Fall 2026 Co-op",
   market: "Water / Wastewater",
-  logo: `/icons/mckim.png?v=399`,
-  wordmark: `/icons/mckim-wordmark.png?v=399`,
   focusTags: [
     "AutoCAD",
     "PLC",
@@ -1157,8 +1155,6 @@ function renderMckimShowcase() {
     location,
     term,
     market,
-    logo,
-    wordmark,
     overview,
     focusTags,
     designResponsibilities,
@@ -1177,10 +1173,6 @@ function renderMckimShowcase() {
   return `
     <div class="mckim-showcase">
       <header class="mckim-hero">
-        <div class="mckim-hero-brand">
-          <img class="mckim-logo" src="${logo}" alt="McKim & Creed symbol" />
-          <img class="mckim-wordmark" src="${wordmark}" alt="McKim & Creed" />
-        </div>
         <div class="mckim-hero-copy">
           <p class="mckim-eyebrow">${company}</p>
           <h3 class="mckim-title">${title}</h3>

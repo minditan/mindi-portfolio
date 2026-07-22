@@ -143,8 +143,8 @@ body {
   object-fit: contain;
   object-position: center;
   filter: none;
-  transform: none;
-  image-rendering: auto;
+  transform: scale(0.92);
+  background: transparent;
 }
 
 .dock-app-icon--ecen .dock-icon-img {
@@ -2094,20 +2094,10 @@ body {
   max-width: 100%;
 }
 
-.mckim-logo {
-  width: 48px;
-  height: 45px;
-  object-fit: contain;
-  object-position: center;
-  background: transparent;
-  filter: none;
-  flex-shrink: 0;
-}
-
 .mckim-wordmark {
-  height: 34px;
+  height: 40px;
   width: auto;
-  max-width: min(300px, 65vw);
+  max-width: min(340px, 75%);
   object-fit: contain;
   object-position: left center;
   background: transparent;
@@ -2309,8 +2299,8 @@ body {
   }
 
   .mckim-wordmark {
-    max-width: 200px;
-    height: 28px;
+    max-width: 220px;
+    height: 30px;
   }
 }
 
