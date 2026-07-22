@@ -252,6 +252,7 @@ const ICONS = {
 
 const FALLBACK_DOCK_ICONS = {
   about: `/icons/about.png?v=${DESKTOP_VERSION}`,
+  mckim: `/icons/mckim.png?v=399`,
   blender: `/icons/blender.png?v=${DESKTOP_VERSION}`,
   nasa: `/icons/nasa.png?v=${DESKTOP_VERSION}`,
   sharetea: `/icons/sharetea.png?v=${DESKTOP_VERSION}`,
@@ -395,6 +396,7 @@ function getDockIconHtml(id) {
 function getDockIconMarkup(id) {
   if (
     id === "about" ||
+    id === "mckim" ||
     id === "blender" ||
     id === "nasa" ||
     id === "sharetea" ||
@@ -413,6 +415,7 @@ function refreshDockIcons() {
     const { id } = btn.dataset;
     if (
       id !== "about" &&
+      id !== "mckim" &&
       id !== "blender" &&
       id !== "nasa" &&
       id !== "sharetea" &&
@@ -517,6 +520,7 @@ const LINK_POPUPS = {
 
 const DOCK_ITEMS = [
   { id: "about", label: "About Me", type: "popup" },
+  { id: "mckim", label: "McKim & Creed", type: "popup" },
   { id: "blender", label: "Room Folio", type: "popup" },
   { id: "nasa", label: "Team SOLARA", type: "popup" },
   { id: "sharetea", label: "Sharetea POS", type: "popup" },
@@ -563,6 +567,65 @@ const BLENDER_PROJECT = {
     },
   ],
   images: FALLBACK_ROOMFOLIO_IMAGES,
+};
+
+const MCKIM_PROJECT = {
+  company: "McKim & Creed, Inc. (Signature Automation)",
+  title: "Electrical & Instrumentation Intern (Controls & Automation)",
+  location: "Dallas, Texas",
+  term: "Fall 2026 Co-op",
+  market: "Water / Wastewater",
+  logo: `/icons/mckim.png?v=399`,
+  wordmark: `/icons/mckim-wordmark.png?v=399`,
+  focusTags: [
+    "AutoCAD",
+    "PLC",
+    "SCADA",
+    "HMI Graphics",
+    "I&C Design",
+    "Commissioning",
+  ],
+  overview:
+    "Electrical, instrumentation, and controls design for the water/wastewater market — plus IT consultancy and SCADA programming. Co-op students jump into real design and programming work on active projects.",
+  designResponsibilities: [
+    {
+      label: "Instrument research",
+      text: "Research instruments and equipment for control-system designs",
+    },
+    {
+      label: "Spec writing",
+      text: "Write technical specifications that support contractor bidding and construction",
+    },
+    {
+      label: "AutoCAD drawings",
+      text: "Create one-line diagrams, SCADA architecture, panel layouts, and instrumentation details",
+    },
+  ],
+  programmingResponsibilities: [
+    {
+      label: "HMI graphics",
+      text: "Build operator graphics that visualize process control systems",
+    },
+    {
+      label: "PLC logic",
+      text: "Program automatic and manual controls for treatment processes",
+    },
+    {
+      label: "Historian & reports",
+      text: "Configure historical data collection and operator reporting",
+    },
+    {
+      label: "Commissioning",
+      text: "Work with contractors and plant staff to start up systems with minimal disruption",
+    },
+  ],
+  links: [
+    {
+      label: "Visit McKim & Creed",
+      href: "https://www.mckimcreed.com/",
+      primary: true,
+    },
+  ],
 };
 
 const NASA_PROJECT = {
@@ -1082,6 +1145,98 @@ function renderBlenderShowcase() {
             </ul>
           </section>
         </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMckimShowcase() {
+  const {
+    company,
+    title,
+    location,
+    term,
+    market,
+    logo,
+    wordmark,
+    overview,
+    focusTags,
+    designResponsibilities,
+    programmingResponsibilities,
+    links,
+  } = MCKIM_PROJECT;
+
+  const renderFeatureCard = (item, index) => `
+    <article class="mckim-feature-card">
+      <span class="mckim-feature-index">${String(index + 1).padStart(2, "0")}</span>
+      <h5>${item.label}</h5>
+      <p>${item.text}</p>
+    </article>
+  `;
+
+  return `
+    <div class="mckim-showcase">
+      <header class="mckim-hero">
+        <div class="mckim-hero-brand">
+          <img class="mckim-logo" src="${logo}" alt="McKim & Creed symbol" />
+          <img class="mckim-wordmark" src="${wordmark}" alt="McKim & Creed" />
+        </div>
+        <div class="mckim-hero-copy">
+          <p class="mckim-eyebrow">${company}</p>
+          <h3 class="mckim-title">${title}</h3>
+          <div class="mckim-chip-row">
+            <span class="mckim-chip mckim-chip--accent">${term}</span>
+            <span class="mckim-chip">${location}</span>
+            <span class="mckim-chip">${market}</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="mckim-overview-panel">
+        <div class="mckim-overview-label">What I'll be doing</div>
+        <p>${overview}</p>
+        <div class="mckim-tag-cloud">
+          ${focusTags.map((tag) => `<span class="mckim-tag">${tag}</span>`).join("")}
+        </div>
+      </section>
+
+      <div class="mckim-split">
+        <section class="mckim-panel mckim-panel--design">
+          <div class="mckim-panel-head">
+            <span class="mckim-panel-kicker">Track 01</span>
+            <h4>Design</h4>
+            <p>Plans, specs, and drawings that get water/wastewater projects bid and built.</p>
+          </div>
+          <div class="mckim-feature-grid">
+            ${designResponsibilities.map(renderFeatureCard).join("")}
+          </div>
+        </section>
+
+        <section class="mckim-panel mckim-panel--code">
+          <div class="mckim-panel-head">
+            <span class="mckim-panel-kicker">Track 02</span>
+            <h4>Programming &amp; commissioning</h4>
+            <p>Make the plant controllable — then help bring it online with operators.</p>
+          </div>
+          <div class="mckim-feature-grid">
+            ${programmingResponsibilities.map(renderFeatureCard).join("")}
+          </div>
+        </section>
+      </div>
+
+      <div class="mckim-links">
+        ${links
+          .map(
+            (link) => `
+          <a
+            class="${link.primary ? "mckim-link mckim-link--primary" : "mckim-link"}"
+            href="${link.href}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >${link.label}</a>
+        `
+          )
+          .join("")}
       </div>
     </div>
   `;
@@ -1637,6 +1792,10 @@ function popupContent(id) {
     return renderBlenderShowcase();
   }
 
+  if (id === "mckim") {
+    return renderMckimShowcase();
+  }
+
   if (id === "nasa") {
     return renderNasaShowcase();
   }
@@ -1744,16 +1903,17 @@ function openPopup(id, label) {
     initProjectGallery(popupBodyEl.querySelector(".project-showcase"));
   }
   popupCardEl?.classList.toggle("is-about", id === "about");
+  popupCardEl?.classList.toggle("is-mckim-showcase", id === "mckim");
   popupCardEl?.classList.toggle(
     "is-project-showcase",
-    id === "blender" || id === "nasa" || id === "sharetea" || id === "ecen" || id === "aiglasses"
+    id === "blender" || id === "nasa" || id === "sharetea" || id === "ecen" || id === "aiglasses" || id === "mckim"
   );
   popupCardEl?.classList.toggle("is-nasa-showcase", id === "nasa");
   popupCardEl?.classList.toggle("is-sharetea-showcase", id === "sharetea");
   popupCardEl?.classList.toggle("is-ecen-showcase", id === "ecen");
   popupCardEl?.classList.toggle("is-aiglasses-showcase", id === "aiglasses");
   popupCardEl?.classList.toggle("is-resume-showcase", id === "resume");
-  popupCardEl?.classList.toggle("is-wide", id === "qualifications" || id === "resume");
+  popupCardEl?.classList.toggle("is-wide", id === "qualifications" || id === "resume" || id === "mckim");
   popupCardEl?.classList.toggle("is-link", Boolean(LINK_POPUPS[id]));
   popupEl.hidden = false;
   resetPopupScroll();
@@ -1778,6 +1938,7 @@ function closePopup() {
     "is-sharetea-showcase",
     "is-ecen-showcase",
     "is-aiglasses-showcase",
+    "is-mckim-showcase",
     "is-resume-showcase"
   );
   dockEl.querySelectorAll(".dock-btn").forEach((btn) => {

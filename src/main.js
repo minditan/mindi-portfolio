@@ -19,6 +19,7 @@ import sweetDispositionUrl from "./assets/music/sweet-disposition.mp3?url";
 import coldWaterUrl from "./assets/music/cold-water.mp3?url";
 import clarityUrl from "./assets/music/clarity.mp3?url";
 import aboutIconUrl from "./assets/icons/about.png?url";
+import mckimIconUrl from "./assets/icons/mckim.png?url";
 import electricalIconUrl from "./assets/icons/electrical.png?url";
 import aiglassesIconUrl from "./assets/icons/aiglasses.png?url";
 import aiGlassesPrototypeUrl from "./assets/ai-glasses/prototype-build.jpg?url";
@@ -721,6 +722,7 @@ const MONITOR_ASSET_PAYLOAD = {
   ],
   dockIcons: {
     about: aboutIconUrl,
+    mckim: mckimIconUrl,
     blender: blenderIconUrl,
     nasa: nasaIconUrl,
     sharetea: shareteaIconUrl,
