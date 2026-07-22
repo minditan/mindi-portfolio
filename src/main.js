@@ -32,8 +32,6 @@ import ecen314BodeHpUrl from "./assets/ecen-lab/ecen314-bode-hp.png?url";
 import ecen314BandpassTimeUrl from "./assets/ecen-lab/ecen314-bandpass-time.png?url";
 import ecen314OscilloscopeUrl from "./assets/ecen-lab/ecen314-oscilloscope.png?url";
 import ecenHeroChipUrl from "./assets/ecen-hero-chip.png?url";
-import introBunnyStickerUrl from "./assets/intro-bunny-sticker.png?url";
-import introBunnyStickerLeftUrl from "./assets/intro-bunny-sticker-left.png?url";
 
 inject();
 
@@ -56,17 +54,6 @@ const roomMusicNowPlaying = document.getElementById("room-music-now-playing");
 const musicControlsTemplate = document.getElementById("music-controls-template");
 const musicPlaylistControls = document.getElementById("music-playlist-controls");
 const roomMusicControls = document.getElementById("room-music-controls");
-const introBunnyStickerRight = document.querySelector(".intro-bunny-sticker--right");
-const introBunnyStickerLeft = document.querySelector(".intro-bunny-sticker--left");
-const introBunnyStickers = document.querySelectorAll(".intro-bunny-sticker");
-
-if (introBunnyStickerRight) {
-  introBunnyStickerRight.src = introBunnyStickerUrl;
-}
-
-if (introBunnyStickerLeft) {
-  introBunnyStickerLeft.src = introBunnyStickerLeftUrl;
-}
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -185,11 +172,12 @@ const PC_FAN_NODE_NAMES = new Set([
 const PC_FAN_SPIN_RPS = 2;
 const pcFanSpinAxisVector = new THREE.Vector3();
 const CAMERA_TWEEN_MS = 900;
-const ENTER_REVEAL_MS = 1500;
+const ENTER_SPIN_MS = 2400;
+const ENTER_TOP_PASS_MS = 2800;
 
 const CLICK_NAMES = /desk|monitor|screen|keyboard|mouse|computer|pc|case|display/i;
 const MONITOR_NAMES = /monitor|screen|display|laptop|lcd|imac|panel/i;
-const BUILD_VERSION = "v392";
+const BUILD_VERSION = "v409";
 const INTRO_HINT = "drag to look around · click the pink chair to sit!";
 const ROOM_HINT =
   "Click the chair to learn more about my portfolio and experiences!";
@@ -240,13 +228,6 @@ const RECORD_PLAYER_NODE_NAMES = new Set([
   "Cylinder193",
 ]);
 
-function showIntroBunnySticker() {
-  introBunnyStickers.forEach((sticker) => {
-    sticker.hidden = false;
-    requestAnimationFrame(() => sticker.classList.add("is-visible"));
-  });
-}
-
 let introReady = false;
 let pendingDockItem = null;
 
@@ -269,8 +250,6 @@ function showIntroEnterGate() {
     introEnter.hidden = false;
     requestAnimationFrame(() => introEnter.classList.add("is-visible"));
   }
-
-  showIntroBunnySticker();
 }
 
 function postOpenDockItem(id) {
@@ -284,6 +263,7 @@ function playEnterReveal() {
   document.body.classList.add("is-room-active");
   intro.classList.add("is-leaving");
   chairEnterStartTime = performance.now();
+  hint?.classList.add("is-hidden");
 
   window.setTimeout(() => {
     intro.style.display = "none";
@@ -297,9 +277,9 @@ function playEnterReveal() {
     return;
   }
 
-  animateCameraTo(roomView, () => {
+  playEnterOverviewSpin(() => {
     hint?.classList.remove("is-hidden");
-  }, { duration: ENTER_REVEAL_MS });
+  });
 
   showRoomMusicBar();
   startRoomMusic();
@@ -754,7 +734,8 @@ window.addEventListener("message", (event) => {
 const VERTICAL_MONITOR_RESUME_NODES = new Set(["Plane.014"]);
 const VERTICAL_MONITOR_RESUME_MESHES = new Set(["Plane014"]);
 const VERTICAL_MONITOR_RESUME_URL = "/resume-preview.png";
-const RESUME_ASSET_VERSION = "396b";
+const RESUME_ASSET_VERSION = "396f";
+const VERTICAL_MONITOR_RESUME_UV_OFFSET_Y = -0.012;
 const MAIN_MONITOR_WALLPAPER_URL = "/monitor-wallpaper.jpg";
 const MAIN_MONITOR_SCREEN_NODES = new Set(["Plane.013", "Plane.994", "Plane.780"]);
 const MAIN_MONITOR_SCREEN_MESHES = new Set(["Plane013", "Plane994", "Plane780"]);
@@ -1372,6 +1353,9 @@ async function prepareVerticalMonitorScreen(root) {
     );
     // Match glTF UV orientation so the resume isn't flipped on the screen plane.
     map.flipY = false;
+    map.wrapS = THREE.ClampToEdgeWrapping;
+    map.wrapT = THREE.ClampToEdgeWrapping;
+    map.offset.y = VERTICAL_MONITOR_RESUME_UV_OFFSET_Y;
     applyScreenMaterial(screenMesh, { map }, maxAnisotropy);
     mode = "resume-preview";
   } catch (err) {
@@ -1858,6 +1842,170 @@ function animateCameraTo(destination, onComplete, { endFov = null, duration = CA
     isAnimating = false;
     cameraTween = null;
     onComplete?.();
+
+    // Enter/room tweens must restore orbit; desk/monitor callbacks keep it locked.
+    if (!isDeskView) {
+      controls.enabled = true;
+      setControlsInteractive(true);
+    }
+  };
+
+  cameraTween = requestAnimationFrame(step);
+}
+
+function playEnterOverviewSpin(onComplete) {
+  if (cameraTween) cancelAnimationFrame(cameraTween);
+  if (!room) {
+    onComplete?.();
+    return;
+  }
+
+  const box = new THREE.Box3().setFromObject(room);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const homePosition = roomView.position.clone();
+  const homeTarget = roomView.target.clone();
+  const startPosition = camera.position.clone();
+  const startTarget = controls.target.clone();
+
+  const startOffset = startPosition.clone().sub(center);
+  const homeOffset = homePosition.clone().sub(center);
+  const startSpherical = new THREE.Spherical().setFromVector3(startOffset);
+  const homeSpherical = new THREE.Spherical().setFromVector3(homeOffset);
+  const homeDistance = Math.max(homeOffset.length(), 1);
+
+  // Phase 1: one full side-orbit spin, faster across the back wall.
+  const spinDeltaTheta = homeSpherical.theta - startSpherical.theta + Math.PI * 2;
+  const backSpeedBoost = 0.72;
+
+  // Overhead waypoint — pass through this, then immediately return home.
+  const topPosition = new THREE.Vector3(
+    center.x,
+    box.max.y + Math.max(size.x, size.z) * 1.48,
+    center.z
+  );
+  const topTarget = new THREE.Vector3(center.x, box.min.y + size.y * 0.05, center.z);
+
+  const startFov = camera.fov;
+  const startedAt = performance.now();
+  const previousMaxDistance = controls.maxDistance;
+  controls.maxDistance = Math.max(
+    previousMaxDistance,
+    topPosition.distanceTo(topTarget) * 1.25,
+    homeDistance * 2.5
+  );
+
+  isAnimating = true;
+  controls.enabled = false;
+  setControlsInteractive(false);
+  chairCursor.hidden = true;
+  monitorCursor.hidden = true;
+  recordCursor.hidden = true;
+
+  const offset = new THREE.Vector3();
+  const spherical = new THREE.Spherical();
+  const spinEndPosition = new THREE.Vector3();
+  const spinEndTarget = new THREE.Vector3();
+  let spinCaptured = false;
+
+  const orbitProgress = (t) =>
+    t - (backSpeedBoost / (Math.PI * 2)) * Math.sin(Math.PI * 2 * t);
+
+  const applyCamera = (position, target, fov = ROOM_FOV) => {
+    camera.position.copy(position);
+    controls.target.copy(target);
+    camera.up.set(0, 1, 0);
+    camera.lookAt(target);
+    camera.fov = fov;
+    camera.updateProjectionMatrix();
+  };
+
+  const sampleSpin = (u, outPos, outTarget) => {
+    spherical.radius = THREE.MathUtils.lerp(startOffset.length(), homeDistance, u);
+    spherical.theta = startSpherical.theta + spinDeltaTheta * u;
+    // Keep the first spin a bit lower / more side-on.
+    const spinPhi = 1.32;
+    spherical.phi = THREE.MathUtils.clamp(
+      THREE.MathUtils.lerp(
+        Math.max(startSpherical.phi, spinPhi),
+        spinPhi,
+        u
+      ),
+      1.25,
+      1.42
+    );
+    offset.setFromSpherical(spherical);
+    outPos.copy(center).add(offset);
+    outTarget.lerpVectors(startTarget, homeTarget, u);
+  };
+
+  // Quadratic bezier through overhead so we peek at top view without stopping.
+  const sampleTopPass = (t, outPos, outTarget) => {
+    const inv = 1 - t;
+    outPos.set(
+      inv * inv * spinEndPosition.x + 2 * inv * t * topPosition.x + t * t * homePosition.x,
+      inv * inv * spinEndPosition.y + 2 * inv * t * topPosition.y + t * t * homePosition.y,
+      inv * inv * spinEndPosition.z + 2 * inv * t * topPosition.z + t * t * homePosition.z
+    );
+    outTarget.set(
+      inv * inv * spinEndTarget.x + 2 * inv * t * topTarget.x + t * t * homeTarget.x,
+      inv * inv * spinEndTarget.y + 2 * inv * t * topTarget.y + t * t * homeTarget.y,
+      inv * inv * spinEndTarget.z + 2 * inv * t * topTarget.z + t * t * homeTarget.z
+    );
+  };
+
+  const finishEnter = () => {
+    applyCamera(homePosition, homeTarget, ROOM_FOV);
+    controls.maxDistance = previousMaxDistance;
+    isAnimating = false;
+    cameraTween = null;
+    onComplete?.();
+    if (!isDeskView) {
+      controls.enabled = true;
+      setControlsInteractive(true);
+    }
+  };
+
+  console.info(`[portfolio ${BUILD_VERSION} enter-cam]`, {
+    home: homePosition.toArray(),
+    top: topPosition.toArray(),
+    lift: topPosition.y - homePosition.y,
+  });
+
+  const step = (now) => {
+    const elapsed = now - startedAt;
+
+    if (elapsed < ENTER_SPIN_MS) {
+      const raw = elapsed / ENTER_SPIN_MS;
+      const t = easeInOutCubic(raw);
+      const u = THREE.MathUtils.clamp(orbitProgress(t), 0, 1);
+      sampleSpin(u, camera.position, controls.target);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(controls.target);
+      camera.fov = THREE.MathUtils.lerp(startFov, ROOM_FOV, u);
+      camera.updateProjectionMatrix();
+      cameraTween = requestAnimationFrame(step);
+      return;
+    }
+
+    if (!spinCaptured) {
+      sampleSpin(1, spinEndPosition, spinEndTarget);
+      spinCaptured = true;
+    }
+
+    if (elapsed < ENTER_SPIN_MS + ENTER_TOP_PASS_MS) {
+      const raw = (elapsed - ENTER_SPIN_MS) / ENTER_TOP_PASS_MS;
+      const t = easeInOutCubic(THREE.MathUtils.clamp(raw, 0, 1));
+      sampleTopPass(t, camera.position, controls.target);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(controls.target);
+      camera.fov = ROOM_FOV;
+      camera.updateProjectionMatrix();
+      cameraTween = requestAnimationFrame(step);
+      return;
+    }
+
+    finishEnter();
   };
 
   cameraTween = requestAnimationFrame(step);
@@ -3088,11 +3236,11 @@ function fitCameraToRoom(object) {
   const maxDim = Math.max(size.x, size.y, size.z);
   const distance = maxDim * 1.62;
 
-  controls.target.set(center.x, center.y + size.y * 0.04, center.z);
+  controls.target.set(center.x, center.y + size.y * 0.02, center.z);
   camera.position.set(
-    center.x + distance * 0.92,
-    center.y + distance * 0.42,
-    center.z + distance * 0.92
+    center.x + distance * 0.88,
+    center.y + distance * 0.58,
+    center.z + distance * 0.88
   );
   controls.update();
 
@@ -3284,7 +3432,6 @@ async function loadRoom() {
       introEnterRow.hidden = false;
       introEnterRow.classList.add("is-visible");
     }
-    showIntroBunnySticker();
     if (introEnterLabel) {
       introEnterLabel.textContent = "Retry";
     } else if (introEnter) {

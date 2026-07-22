@@ -60,48 +60,6 @@ body.is-room-active canvas {
   pointer-events: none;
 }
 
-.intro-bunny-sticker {
-  position: fixed;
-  bottom: clamp(1rem, 3vh, 2.25rem);
-  width: clamp(124px, 19.5vw, 188px);
-  height: auto;
-  object-fit: contain;
-  pointer-events: none;
-  user-select: none;
-  filter: drop-shadow(0 10px 20px rgba(92, 61, 74, 0.28));
-  opacity: 0;
-  z-index: 10001;
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-}
-
-.intro-bunny-sticker--right {
-  right: clamp(2.25rem, 5.5vw, 3.75rem);
-  transform: rotate(14deg) scale(0.92);
-  transform-origin: bottom right;
-}
-
-.intro-bunny-sticker--left {
-  left: clamp(2.25rem, 5.5vw, 3.75rem);
-  transform: rotate(-14deg) scale(0.92);
-  transform-origin: bottom left;
-}
-
-.intro-bunny-sticker[hidden] {
-  display: none !important;
-}
-
-.intro-bunny-sticker--right.is-visible {
-  opacity: 1;
-  transform: rotate(14deg) scale(1);
-}
-
-.intro-bunny-sticker--left.is-visible {
-  opacity: 1;
-  transform: rotate(-14deg) scale(1);
-}
-
 .intro-enter-row {
   display: inline-flex;
   align-items: center;
