@@ -1,7 +1,9 @@
 const PROFILE = {
   name: "Mindi Tan",
   role: "Computer Engineering Undergraduate · Texas A&M University",
-  location: "Houston, TX",
+  internshipTitle: "Electrical & Automation Intern",
+  internshipCompany: "McKim & Creed, Inc. · Dallas, Texas",
+  location: "",
   available: false,
   topSkills: [
     "Hardware",
@@ -1608,7 +1610,19 @@ function popupContent(id) {
           <div class="about-card about-card-head">
             <h3>${PROFILE.name}<span class="about-name-accent">.✦ ݁˖</span></h3>
             <div class="role">${PROFILE.role}</div>
-            <p class="about-location">${PROFILE.location}</p>
+            ${
+              PROFILE.internshipTitle
+                ? `<div class="internship">
+                    <div class="internship-title">${PROFILE.internshipTitle}</div>
+                    <div class="internship-company">${PROFILE.internshipCompany}</div>
+                  </div>`
+                : ""
+            }
+            ${
+              PROFILE.location
+                ? `<p class="about-location">${PROFILE.location}</p>`
+                : ""
+            }
             ${PROFILE.available ? '<div class="badge">Available for work</div>' : ""}
           </div>
           <div class="about-card about-card-body">
